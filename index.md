@@ -1,6 +1,6 @@
-**Projekt do IB031**
+**IB031 Project**
 
-- [Zdroj](https://www.kaggle.com/altruistdelhite04/loan-prediction-problem-dataset)
+- [Source](https://www.kaggle.com/altruistdelhite04/loan-prediction-problem-dataset)
 
 - [Testing csv](https://www.kaggle.com/altruistdelhite04/loan-prediction-problem-dataset/download/evL45lGV3RssadtbrRzN%2Fversions%2FvfUNmIbaXE87YsRW0vw8%2Ffiles%2Ftest_Y3wMUE5_7gLdaTN.csv?datasetVersionNumber=1)
 
@@ -19,19 +19,22 @@ In this project we will implement several models to predict credibility of a loa
 
 
 ## 1. Exploratory Analysis
-The dataset consists of basic information about applicants. There are 13 columns with over 1000 rows. First of all, we will deal with the data types.
+The dataset consists of basic information about applicants. There are 13 columns with about 1000 rows. First of all, we will deal with the data types.
 
 
 ```python
 import seaborn as sns
 import pandas as pd
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 sns.set()
 ```
 
-Since pandas loads categorical data types as *'object'* dtype by default, we want to convert them back to category after loading the csv
+Since pandas loads categorical data types as *'object'* dtype by default, we want to convert them back to category
+after loading the csv. We are also dropping the "Loan_Status" column, which will later provide labels for classification. 
+Unfortunately, this particular dataset does not contain a set of testing labels, therefore we were forced to split an
+already sparse training set into 2 parts.
 
 
 ```python
@@ -58,17 +61,19 @@ X.info()
     <class 'pandas.core.frame.DataFrame'>
     Index: 614 entries, LP001002 to LP002990
     Data columns (total 11 columns):
-    Gender               601 non-null category
-    Married              611 non-null category
-    Dependents           599 non-null category
-    Education            614 non-null category
-    Self_Employed        582 non-null category
-    ApplicantIncome      614 non-null int64
-    CoapplicantIncome    614 non-null float64
-    LoanAmount           592 non-null float64
-    Loan_Amount_Term     600 non-null float64
-    Credit_History       564 non-null float64
-    Property_Area        614 non-null category
+     #   Column             Non-Null Count  Dtype   
+    ---  ------             --------------  -----   
+     0   Gender             601 non-null    category
+     1   Married            611 non-null    category
+     2   Dependents         599 non-null    category
+     3   Education          614 non-null    category
+     4   Self_Employed      582 non-null    category
+     5   ApplicantIncome    614 non-null    int64   
+     6   CoapplicantIncome  614 non-null    float64 
+     7   LoanAmount         592 non-null    float64 
+     8   Loan_Amount_Term   600 non-null    float64 
+     9   Credit_History     564 non-null    float64 
+     10  Property_Area      614 non-null    category
     dtypes: category(6), float64(4), int64(1)
     memory usage: 33.0+ KB
     
@@ -391,45 +396,123 @@ Here we have some essential statistics about our dataset. For instance, we can s
 
 
 ```python
-sns.heatmap(X.corr(), annot=True, vmin=-0.3, cmap="viridis", fmt=".2f")
+sns.heatmap(X.corr(), annot=True, vmin=-0.3, cmap="viridis", fmt=".2f")
+plt.show()
 ```
 
 
-
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x7f5dbff4b5f8>
-
-
-
-
-![png](index_files/index_18_1.png)
+![png](notebook_files/notebook_18_0.png)
 
 
 We also computed and plotted correlation matrix of features in the dataset. There is only one pair of features, loan amount and applicant income, which can be considered to be mildly positively correlated. Other features, have nearly no correlation among them. This results is quite suprising, as one would expect higher correlation of features.
 
 
 ```python
-X.hist(bins=40, log=True)
+sns.catplot("Loan_Status", col="Property_Area", data=dataset, kind="count")
+sns.catplot("Loan_Status", col="Dependents", data=dataset, kind="count")
+sns.catplot("Loan_Status", col="Gender", data=dataset, kind="count")
+sns.catplot("Loan_Status", col="Married", data=dataset, kind="count")
+sns.catplot("Loan_Status", col="Education", data=dataset, kind="count")
 ```
 
 
 
 
-    array([[<matplotlib.axes._subplots.AxesSubplot object at 0x7f5dfc30c128>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x7f5dbfbb78d0>],
-           [<matplotlib.axes._subplots.AxesSubplot object at 0x7f5dbf6222b0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x7f5dbf632c50>],
-           [<matplotlib.axes._subplots.AxesSubplot object at 0x7f5dbe011630>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x7f5dbf51efd0>]],
-          dtype=object)
+    <seaborn.axisgrid.FacetGrid at 0x7f55efc3df60>
 
 
 
 
-![png](index_files/index_20_1.png)
+![png](notebook_files/notebook_20_1.png)
 
 
-Most of the features are scattered along the x-axis. The only exception is Loan Amount, which roughly follows the normal distribution.
+
+![png](notebook_files/notebook_20_2.png)
+
+
+
+![png](notebook_files/notebook_20_3.png)
+
+
+
+![png](notebook_files/notebook_20_4.png)
+
+
+
+![png](notebook_files/notebook_20_5.png)
+
+
+
+```python
+sns.countplot(X["Gender"])
+plt.show()
+sns.countplot(X["Married"])
+plt.show()
+sns.countplot(X["Dependents"])
+plt.show()
+sns.countplot(X["Education"])
+plt.show()
+sns.countplot(X["Self_Employed"])
+plt.show()
+sns.countplot(X["Property_Area"])
+plt.show()
+sns.distplot(X["ApplicantIncome"], kde=True)
+plt.show()
+sns.distplot(X["CoapplicantIncome"], kde=True)
+plt.show()
+sns.distplot(X["Credit_History"], kde=True)
+plt.show()
+sns.distplot(X["LoanAmount"], kde=True)
+plt.show()
+sns.distplot(X["Loan_Amount_Term"], kde=True)
+plt.show()
+```
+
+
+![png](notebook_files/notebook_21_0.png)
+
+
+
+![png](notebook_files/notebook_21_1.png)
+
+
+
+![png](notebook_files/notebook_21_2.png)
+
+
+
+![png](notebook_files/notebook_21_3.png)
+
+
+
+![png](notebook_files/notebook_21_4.png)
+
+
+
+![png](notebook_files/notebook_21_5.png)
+
+
+
+![png](notebook_files/notebook_21_6.png)
+
+
+
+![png](notebook_files/notebook_21_7.png)
+
+
+
+![png](notebook_files/notebook_21_8.png)
+
+
+
+![png](notebook_files/notebook_21_9.png)
+
+
+
+![png](notebook_files/notebook_21_10.png)
+
+
+Most of the features are scattered along the x-axis. The only exception is Loan Amount, which roughly follows the Chi-squared distribution.
 
 
 ```python
@@ -439,28 +522,28 @@ sns.countplot(y)
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7f5dbde41240>
+    <matplotlib.axes._subplots.AxesSubplot at 0x7f55ef9e5ef0>
 
 
 
 
-![png](index_files/index_22_1.png)
+![png](notebook_files/notebook_23_1.png)
 
 
 
 ```python
-sns.pairplot(dataset, hue="Loan_Status", diag_kind="hist", kind="reg", diag_kws={"histtype": "barstacked", "alpha": 0.5}, plot_kws={"scatter_kws": {"alpha": 0.35}})
+sns.pairplot(dataset, hue="Loan_Status", kind="reg", diag_kws={"alpha": 0.5}, plot_kws={"scatter_kws": {"alpha": 0.35}})
 ```
 
 
 
 
-    <seaborn.axisgrid.PairGrid at 0x7f5dbdd54ac8>
+    <seaborn.axisgrid.PairGrid at 0x7f55eff33080>
 
 
 
 
-![png](index_files/index_23_1.png)
+![png](notebook_files/notebook_24_1.png)
 
 
 Credit history seems to have the highest impact on deciding whether the loan should be approved or not. Clients with low credit score seem more likely to be denied.
@@ -481,9 +564,15 @@ y.isna().sum()
 
 
 
-Good, there are no N/A labels. We do not need to drop any whole rows.
+Good, there are no N/A labels. We do not need to drop any rows. Besides that, dropping a significant part of the dataset
+could have misrepresenting effects.
 
-First, let's encode categorical values with OneHotEncoding
+Firstly, we will impute the missing values with ```SimpleImputer``` and strategy ```most_frequent```. As ```SimpleImputer```
+returns an array, we will transform it back to a pandas dataframe. Another step
+is encoding the categorical features using ```OneHotEncoder```. Lastly, we will scale the features with ```StandardScaler```. 
+Their mean will therefore be 0 and variance 1.
+
+The labels need significantly less preprocessing. Encoding their boolean values is sufficient.
 
 
 ```python
@@ -491,7 +580,6 @@ from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder, StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.compose import make_column_transformer
 from sklearn.impute import SimpleImputer
-from sklearn_pandas import DataFrameMapper
 
 class NpToDf:
     columns = []
@@ -520,8 +608,6 @@ pipe_X = make_pipeline(
 pipe_y = make_pipeline(
     OrdinalEncoder()
 )
-
-
 ```
 
 
@@ -563,12 +649,8 @@ def roc(clf, test_X, test_y):
 
 
 ```python
-from sklearn.metrics import plot_precision_recall_curve
-from sklearn.metrics import precision_recall_curve
-
-def prc(clf, test_X, test_y):
-    plot_precision_recall_curve(clf, test_X, test_y)
-
+from sklearn.metrics import plot_precision_recall_curve as prc
+from sklearn.metrics import precision_recall_curve
 ```
 
 
@@ -584,17 +666,28 @@ def confusion(clf, X_test, y_test):
 
 
 ```python
-def get_gscv(clf, param_grid):
-    gs = GridSearchCV(clf, param_grid)
-    gs.fit(train_X, train_y)
+def get_gscv(clf, param_grid, verbose=1, **kwargs):
+    gs = GridSearchCV(clf, param_grid, verbose=verbose, cv=kwargs.get("cv", 3), n_jobs=kwargs.get("workers", -2))
+    gs.fit(train_X, train_y, **kwargs)
     score = gs.score(test_X, test_y)
     print(f"Best parameters: {gs.best_params_}, with F1 score of {score:.2f}")
-    return (score, gs.best_params_)
+    return gs.best_estimator_
 ```
 
-In the following 4 sections, we will always start by running a grid search tuning hyperparameters of our models.
+In the following 4 sections, we will always start by running a grid search tuning hyperparameters of our models. There is a wrapper for keras sequential models, which
+we will use for grid searching. All models will be trained on the same training set. We chose these evaluation metrics
+- **RMSE** - measures error of the predictions compared to actual values, the lower the better. 
+- **Acurracy** computed with cross validation score -  is the proportion of correct predictions (both true positives and true negatives) among the total number of cases examined, the higher the better
+- **F1 score** - is weighted average of precision and recall, the best value is 1, the worst is 0
+- **Receiver Operating Characteristic curve** -  measures the ability of a model to distinguish between classes
+- **Precision Recall curve** - shows the tradeoff between precision and recall for different threshold
+- **Confusion matrix** -  shows the number of True Positive (TP), False Negative (FN), True Negative (TN), False Positive (FP) classifications.
 
-## 3. Decision tree classifier
+## 3. Decision tree classifier
+Decision trees are among the most used classification models. They iteratively split the dataset, until a tree conforming to given parameters has been constructed. 
+In leaves they contain class labels. Internal nodes represent kind of a boolean test, usually a value of a sample's feature, according to which the algorithm chooses the respective edge on the way to leaves.
+The tests can also use entropy and information gain to choose the best edge. There are many to ways to construct a tree, therefore extensive hyperparameter tunning is suitable.
+Decision trees can also be pruned, etheir during construction of after it. 
 
 
 ```python
@@ -606,16 +699,18 @@ dtree_values = {"criterion": ["gini", "entropy"],
                 "max_leaf_nodes": [6, 8, 10, 12, 20, None],
                 "max_features": ["auto", "sqrt", "log2", 2, 4, 8]}
                 
-score, params = get_gscv(dtree_clf, dtree_values)
+tree_clf = get_gscv(dtree_clf, dtree_values)
 ```
 
-    Best parameters: {'criterion': 'entropy', 'max_depth': None, 'max_features': 8, 'max_leaf_nodes': 12}, with F1 score of 0.75
+    Fitting 3 folds for each of 432 candidates, totalling 1296 fits
+    [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
+    [Parallel(n_jobs=-2)]: Done 140 tasks      | elapsed:    2.4s
+    Best parameters: {'criterion': 'gini', 'max_depth': 2, 'max_features': 4, 'max_leaf_nodes': 10}, with F1 score of 0.78
+    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    6.9s finished
     
 
 
 ```python
-tree_clf = DecisionTreeClassifier(**params)
-tree_clf.fit(train_X, train_y)
 evaluate(tree_clf, test_X, test_y)
 roc(tree_clf, test_X, test_y)
 prc(tree_clf, test_X, test_y)
@@ -624,24 +719,29 @@ plt.show()
 
 ```
 
-    RMSE: 0.4771
-    Accuracy: 0.657 ± 0.248
-    F1 Score: 0.75
+    RMSE: 0.4685
+    Accuracy: 0.691 ± 0.193
+    F1 Score: 0.74
     
 
 
-![png](index_files/index_40_1.png)
+![png](notebook_files/notebook_41_1.png)
 
 
 
-![png](index_files/index_40_2.png)
+![png](notebook_files/notebook_41_2.png)
 
 
 
-![png](index_files/index_40_3.png)
+![png](notebook_files/notebook_41_3.png)
 
 
 ## 4. KNN classifier
+
+Another popular classification algorithm, an example of instace-based learning or lazy learning. This time, all distances from a data point to other points are computed, and k-closest neighbours are chosen. Then, the class memberships
+of the _k-closest_ members are considered, with the original data point taking a class label from the most occuring one among its _k-closest_ neighbours. For the distance metrics,
+_Euclidean_ or _Hamming_ distances are usually used. There is a tradeoff in the number of _k-closest_ neighbours. Smaller _k_, signifies the result of noise on classification, but makes
+the various classses more distinct and vice versa with higher _k_. 
 
 
 ```python
@@ -654,16 +754,18 @@ knn_values = {"n_neighbors": list(range(2, 16, 2)),
               "p": [1, 2], 
               "weights": ["uniform", "distance"]}
               
-score, params = get_gscv(knn_clf, knn_values)
+knn_clf = get_gscv(knn_clf, knn_values)
 ```
 
-    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 14, 'p': 2, 'weights': 'uniform'}, with F1 score of 0.80
+    Fitting 3 folds for each of 560 candidates, totalling 1680 fits
+    [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
+    [Parallel(n_jobs=-2)]: Done 410 tasks      | elapsed:    3.3s
+    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 14, 'p': 1, 'weights': 'uniform'}, with F1 score of 0.79
+    [Parallel(n_jobs=-2)]: Done 1680 out of 1680 | elapsed:   13.1s finished
     
 
 
 ```python
-knn_clf = KNeighborsClassifier(**params)
-knn_clf.fit(train_X, train_y)
 evaluate(knn_clf, test_X, test_y)
 roc(knn_clf, test_X, test_y)
 prc(knn_clf, test_X, test_y)
@@ -671,24 +773,29 @@ confusion(knn_clf, test_X, test_y)
 plt.show()
 ```
 
-    RSME: 0.4508
-    Accuracy: 0.803 ± 0.138
-    F1 Score: 0.78
+    RMSE: 0.4598
+    Accuracy: 0.723 ± 0.235
+    F1 Score: 0.76
     
 
 
-![png](index_files/index_43_1.png)
+![png](notebook_files/notebook_45_1.png)
 
 
 
-![png](index_files/index_43_2.png)
+![png](notebook_files/notebook_45_2.png)
 
 
 
-![png](index_files/index_43_3.png)
+![png](notebook_files/notebook_45_3.png)
 
 
 ## 5. Support Vector Machine
+
+Support Vector Machines, abbr. SVM, is a supervised-learning algorithm used mainly for binary classification, although it is possible to use for multi-class classification
+by combing several SVMs. It creates hyperplanes in a multi-dimensional feature space, which are then used for generalization and classifications of data points. The best
+performing hyperplanes are those having  the biggest maximum margin, i.e. the closest data points from both classes are as far as possible. In order to transform input data
+into a desired form, SVM uses so called kernel functions, which return the inner product between two points in a suitable feature space. 
 
 
 ```python
@@ -701,17 +808,19 @@ svc_values = {"C": [.8, 1.0, 1.2, 1.5, 2.0],
               "gamma": ["scale", "auto"], 
               "coef0": [.0, .5, 1.0, 1.5]}
               
-score, params = get_gscv(svc_clf, svc_values)
+svm_clf = get_gscv(svc_clf, svc_values)
 ```
 
-    Best parameters: {'C': 1.0, 'coef0': 1.5, 'degree': 2, 'gamma': 'scale', 'kernel': 'sigmoid'}, with F1 score of 0.78
+    Fitting 3 folds for each of 640 candidates, totalling 1920 fits
+    [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
+    [Parallel(n_jobs=-2)]: Done 146 tasks      | elapsed:    1.7s
+    [Parallel(n_jobs=-2)]: Done 1330 tasks      | elapsed:   16.4s
+    Best parameters: {'C': 0.8, 'coef0': 0.0, 'degree': 2, 'gamma': 'scale', 'kernel': 'rbf'}, with F1 score of 0.80
+    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:   24.3s finished
     
 
 
 ```python
-svm_clf = SVC(**params)
-svm_clf.fit(train_X, train_y)
-
 evaluate(svm_clf, test_X, test_y)
 roc(svm_clf, test_X, test_y)
 prc(svm_clf, test_X, test_y)
@@ -719,73 +828,134 @@ confusion(svm_clf, test_X, test_y)
 plt.show()
 ```
 
-    RSME: 0.4685
-    Accuracy: 0.699 ± 0.079
-    F1 Score: 0.76
+    RMSE: 0.4508
+    Accuracy: 0.797 ± 0.294
+    F1 Score: 0.77
     
 
 
-![png](index_files/index_46_1.png)
+![png](notebook_files/notebook_49_1.png)
 
 
 
-![png](index_files/index_46_2.png)
+![png](notebook_files/notebook_49_2.png)
 
 
 
-![png](index_files/index_46_3.png)
+![png](notebook_files/notebook_49_3.png)
 
 
-## 6. Deep Neural Network
+## 6. Deep Neural Network
+Deep neural networks (DNNs) are artifical neural (ANNs) networks with several hidden layers. Each layer is a fixed number of artificial
+neurons, which accept an input, process it, and send it to the next layer. The layers are organized followingly: 
+
+
+<div align="center"> input layer &rarr; hidden layers &rarr; output layer. </div>
+<br />
+
+Each layer has an activation function, whose choice greatly influences the overall performance. In classification tasks, the output layer
+yields the final class labels. We will use `Sequential model` from `Keras` as our DNN. 
+
+For the activation functions we will stick with ReLU or Recrified Linear Units. These are nearly linear functions commonly used in DNNs and provide the best results.
+Leaky ReLU may be used as well.
+
+We will be choosing either Adam, Stochastic Gradient Descent or RMSProp optimizer.
+
+Batch size will remain constant 32 and epochs 10-15, since these numbers offer the best results for the time spent learning.
+
+We have experimented with dropout a bit, but found little to no difference when using it, so it will be kept at 0
 
 
 ```python
-from tensorflow import keras
 import tensorflow as tf
+import itertools
+import itertools
+import gc
+
+import keras.backend as K
+from keras.optimizers import Adam, SGD, RMSprop
 from keras.models import Sequential
-
-from keras.layers import Dense
+from keras.callbacks import EarlyStopping
+from keras.layers import Dense, Dropout
 from sklearn.metrics import classification_report, confusion_matrix
-from tensorflow.keras import layers
-
-
-print(y_train.shape)
+from keras.wrappers.scikit_learn import KerasClassifier
 ```
 
-    (491,)
+    Using TensorFlow backend.
     
 
 
 ```python
-nn = Sequential()
+layer_sizes = [[[8, 16, 32, 64] for _ in range(size)] for size in range(6, 7)]
+layer_combinations = list(itertools.chain.from_iterable(map(lambda sublist: list(itertools.product(*sublist)), layer_sizes)))
+del layer_sizes
 
-nn.add(Dense(units=128, activation='relu', input_shape=(train_X.shape[1],)))
-nn.add(Dense(units=64, activation='relu'))
-nn.add(Dense(units=32, activation='relu'))
-nn.add(Dense(units=2, activation='softmax')) 
-
-nn.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-nn.summary()
+gc.collect()
+gc.enable()
 ```
 
-    Model: "sequential_1"
-    _________________________________________________________________
-    Layer (type)                 Output Shape              Param #   
-    =================================================================
-    dense_1 (Dense)              (None, 128)               2688      
-    _________________________________________________________________
-    dense_2 (Dense)              (None, 64)                8256      
-    _________________________________________________________________
-    dense_3 (Dense)              (None, 32)                2080      
-    _________________________________________________________________
-    dense_4 (Dense)              (None, 2)                 66        
-    =================================================================
-    Total params: 13,090
-    Trainable params: 13,090
-    Non-trainable params: 0
-    _________________________________________________________________
-    
+
+```python
+def build_net(optim, layers, lr, dropout, **kwargs):
+    K.clear_session()
+    model = Sequential()
+    model.add(Dense(layers[0], input_shape=(train_X.shape[1],), activation='relu'))
+    model.add(Dropout(dropout))
+    for layer in layers[1:]:
+        model.add(Dense(layer, activation='relu'))
+        model.add(Dropout(dropout))
+    model.add(Dense(2, activation='softmax'))
+    model.compile(loss='categorical_crossentropy', optimizer=optim(learning_rate=lr), metrics=['accuracy']) 
+    return model
+```
+
+```python
+net_clf = KerasClassifier(build_fn=build_net, verbose=0)
+
+layer_sizes = [[[32, 64, 128] for _ in range(size)] for size in range(3, 5)]
+layer_combinations = list(itertools.chain.from_iterable(map(lambda sublist: list(itertools.product(*sublist)), layer_sizes)))
+
+net_values = {"optim": [Adam, SGD, RMSprop], "epochs": [10], "batch_size": [32], "layers": layer_combinations, "dropout": [.1], "lr": [4e-3, 1e-4]}
+
+es = EarlyStopping(monitor='loss', min_delta=0, patience=2, verbose=0, mode='auto')
+
+dnn_clf = get_gscv(net_clf, net_values, callbacks=[es])
+```
+Fitting 3 folds for each of 2880 candidates, totalling 8640 fits
+
+[Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
+
+[Parallel(n_jobs=-2)]: Done  44 tasks      | elapsed:   57.7s
+
+[Parallel(n_jobs=-2)]: Done 194 tasks      | elapsed:  2.9min
+
+[Parallel(n_jobs=-2)]: Done 444 tasks      | elapsed:  6.0min
+
+[Parallel(n_jobs=-2)]: Done 794 tasks      | elapsed: 10.3min
+
+[Parallel(n_jobs=-2)]: Done 1244 tasks      | elapsed: 16.2min
+
+[Parallel(n_jobs=-2)]: Done 1794 tasks      | elapsed: 23.3min
+
+[Parallel(n_jobs=-2)]: Done 2444 tasks      | elapsed: 32.8min
+
+[Parallel(n_jobs=-2)]: Done 3194 tasks      | elapsed: 43.9min
+
+[Parallel(n_jobs=-2)]: Done 4044 tasks      | elapsed: 55.9min
+
+[Parallel(n_jobs=-2)]: Done 4994 tasks      | elapsed: 70.5min
+
+[Parallel(n_jobs=-2)]: Done 6044 tasks      | elapsed: 88.4min
+
+[Parallel(n_jobs=-2)]: Done 7194 tasks      | elapsed: 110.4min
+
+[Parallel(n_jobs=-2)]: Done 8444 tasks      | elapsed: 133.1min
+
+[Parallel(n_jobs=-2)]: Done 8640 out of 8640 | elapsed: 136.5min finished
+
+##### 1. Best parameters: {'batch_size': 32, 'dropout': 0.1, 'epochs': 10, 'layers': (32, 64, 32, 64), 'lr': 0.004, 'optim': <class 'keras.optimizers.RMSprop'>}, with F1 score of 0.78
+##### 2. Best parameters: {'batch_size': 32, 'dropout': 0.0, 'epochs': 15, 'layers': (8, 32, 8, 32), 'lr': 0.001, 'optim': <class 'keras.optimizers.RMSprop'>}, with F1 score of 0.77
+##### 3. Best parameters: {'batch_size': 32, 'dropout': 0.1, 'epochs': 12, 'layers': (64, 64, 64, 64, 32, 16), 'lr': 0.0003, 'optim': <class 'keras.optimizers.Adam'>}, with F1 score of 0.85
 
 
 ```python
@@ -794,9 +964,53 @@ ohe = OneHotEncoder()
 nn_train_y = ohe.fit_transform(y_train.to_numpy().reshape(-1, 1))
 nn_test_y = ohe.transform(y_test.to_numpy().reshape(-1, 1))
 
-data = nn.fit(train_X, nn_train_y, batch_size=32, epochs=10, verbose=False)
+# best_args = {'batch_size': 32, 'dropout': 0.1, 'epochs': 15, 'layers': (32, 32, 8), 'lr': 0.0004, 'optim': RMSprop}
+# best_args = {'batch_size': 32, 'dropout': 0.1, 'epochs': 12, 'layers': (64, 64, 64, 64, 32, 16), 'lr': 0.0003, 'optim': Adam}
+# best_args = {'batch_size': 32, 'dropout': 0.0, 'epochs': 15, 'layers': (32, 32, 16, 8), 'lr': 0.0003, 'optim': Adam}
+# best_args = {'batch_size': 32, 'dropout': 0.0, 'epochs': 12, 'layers': (64, 64, 64, 16, 32, 64), 'lr': 0.0003, 'optim': Adam}
+best_args = {'batch_size': 32, 'dropout': 0.0, 'epochs': 20, 'layers': (256, 128, 64, 64, 32), 'lr': 0.0003, 'optim': Adam}
 
-predicted_y = nn.predict(test_X)
+dnn_clf = KerasClassifier(build_fn=build_net, verbose=0, **best_args)
+
+data = dnn_clf.fit(train_X, train_y, epochs=15, batch_size=32)
+dnn_clf.model.summary()
+```
+
+    Model: "sequential_1"
+    _________________________________________________________________
+    Layer (type)                 Output Shape              Param #   
+    =================================================================
+    dense_1 (Dense)              (None, 256)               5376      
+    _________________________________________________________________
+    dropout_1 (Dropout)          (None, 256)               0         
+    _________________________________________________________________
+    dense_2 (Dense)              (None, 128)               32896     
+    _________________________________________________________________
+    dropout_2 (Dropout)          (None, 128)               0         
+    _________________________________________________________________
+    dense_3 (Dense)              (None, 64)                8256      
+    _________________________________________________________________
+    dropout_3 (Dropout)          (None, 64)                0         
+    _________________________________________________________________
+    dense_4 (Dense)              (None, 64)                4160      
+    _________________________________________________________________
+    dropout_4 (Dropout)          (None, 64)                0         
+    _________________________________________________________________
+    dense_5 (Dense)              (None, 32)                2080      
+    _________________________________________________________________
+    dropout_5 (Dropout)          (None, 32)                0         
+    _________________________________________________________________
+    dense_6 (Dense)              (None, 2)                 66        
+    =================================================================
+    Total params: 52,834
+    Trainable params: 52,834
+    Non-trainable params: 0
+    _________________________________________________________________
+    
+
+
+```python
+predicted_y = dnn_clf.predict(test_X)
 
 history_df = pd.DataFrame(data=data.history, columns=data.history.keys())
 
@@ -805,45 +1019,58 @@ plt.show()
 sns.lineplot(legend='full', y='accuracy', x=range(len(data.history['accuracy'])), data=history_df)
 plt.show()
 
-predicted_y_labels = np.argmax(predicted_y, axis=1)
-
 true_y_labels = np.argmax(nn_test_y, axis=1) 
 
-# evaluate(nn, test_X, nn_test_y)
-
-sns.heatmap(confusion_matrix(true_y_labels, predicted_y_labels), annot=True)
+evaluate(dnn_clf, test_X, test_y)
+sns.heatmap(confusion_matrix(true_y_labels, predicted_y), annot=True)
+plt.show()
 
 print('\nClassification Report')
 target_names = ["Y", "N"]
-print(classification_report(true_y_labels, predicted_y_labels, target_names=target_names))
+print(classification_report(true_y_labels, predicted_y, target_names=target_names))
 ```
 
 
-![png](index_files/index_50_0.png)
+![png](notebook_files/notebook_56_0.png)
 
 
 
-![png](index_files/index_50_1.png)
+![png](notebook_files/notebook_56_1.png)
 
 
-    
-    Classification Report
-                  precision    recall  f1-score   support
-    
-               Y       0.59      0.54      0.56        41
-               N       0.78      0.82      0.80        82
-    
-        accuracy                           0.72       123
-       macro avg       0.69      0.68      0.68       123
-    weighted avg       0.72      0.72      0.72       123
-    
+    RMSE: 0.4685
+    Accuracy: 0.797 ± 0.348
+    F1 Score: 0.76
     
 
 
-![png](index_files/index_50_3.png)
+![png](notebook_files/notebook_56_3.png)
 
 
 ## 7. Evaluation
+From evaluation metrics it seems, that _deep neural network_ wins the first prize. Its accuracy peaked at around 90%.
+On the other side of the spectrum is _decision tree classifier_, which had the worst evaluation metrics from all models,
+although _SVM_ was not far ahead. Surprisingly, _KNN_ had the second best performance, although it can be considered as the
+most simple from all the used models. 
+
+And finally, the winner's podium:
+
+1. Deep Neural Network
+2. KNN Classifier
+3. Support Vector Machine
+4. Decision Tree Classifier
+
+Though keep in mind that with such small dataset the performance of all models may be influenced by the random state quite a bit.
+
+The performance of all models could be improved by using weighted samples as the dataset is quite imbalanced.
+
+The accuracy has quite a large differences between positive and negative samples. 
+This is most likely caused by the fact that sampling for model training is not stratified whereas accuracy is computed using stratified cross validation.
+
+All models seemed to have problems with recognising true negatives. In all cases the number of false negatives was greater than the number of true negatives.
+Though this could be due to imbalanced dataset as well.
 
-
-## 8. Conclusion
+## 8. Conclusion
+We have explored and preprocessed the dataset. From the computational side, training of the models and tuning of their hyperparameters did
+not take too long, in average about 35sec per model, with neural network being an exception, as it was trained with several epochs for each
+parameter search. Even though the dataset did not offer many records, we can conclude that the models performed overall quite well. 
