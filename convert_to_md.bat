@@ -1,3 +1,4 @@
 call activate ml
-jupyter nbconvert --to markdown --execute --inplace notebook.ipynb
+jupyter nbconvert --execute --inplace notebook.ipynb
+jupyter nbconvert --to markdown notebook.ipynb
 pause

@@ -8,14 +8,14 @@
 
 In this project we will implement several models to predict credibility of a loan applicant. We will use the Loan Prediction Problem Dataset from Kaggle. The structure of the project is as follows:
 
-1. Exploratory Analysis
-2. Preprocessing of the dataset
-3. Decision tree classifier
-4. KNN classifier
-5. Support Vector Machine
-6. Deep Neural Network
-7. Evaluation
-8. Conclusion
+1. [Exploratory Analysis](#exploratory-analysis)
+2. [Preprocessing of the dataset](#data-preprocessing)
+3. [Decision tree classifier](#decision-tree-classifier)
+4. [KNN classifier](#knn-classifier)
+5. [Support Vector Machine](#support-vector-machine)
+6. [Deep Neural Network](#deep-neural-network)
+7. [Evaluation](#evaluation)
+8. [Conclusion](#conclusion)
 
 
 ## 1. Exploratory Analysis
@@ -418,7 +418,7 @@ sns.catplot("Loan_Status", col="Education", data=dataset, kind="count")
 
 
 
-    <seaborn.axisgrid.FacetGrid at 0x7f55efc3df60>
+    <seaborn.axisgrid.FacetGrid at 0x23a0a6fa610>
 
 
 
@@ -522,7 +522,7 @@ sns.countplot(y)
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7f55ef9e5ef0>
+    <matplotlib.axes._subplots.AxesSubplot at 0x23a0a6cfd00>
 
 
 
@@ -535,15 +535,19 @@ sns.countplot(y)
 sns.pairplot(dataset, hue="Loan_Status", kind="reg", diag_kws={"alpha": 0.5}, plot_kws={"scatter_kws": {"alpha": 0.35}})
 ```
 
+    C:\Users\vojdo\Anaconda3\envs\ml\lib\site-packages\numpy\linalg\linalg.py:1965: RuntimeWarning: invalid value encountered in greater
+      large = s > cutoff
+    
 
 
 
-    <seaborn.axisgrid.PairGrid at 0x7f55eff33080>
+
+    <seaborn.axisgrid.PairGrid at 0x23a0a1389a0>
 
 
 
 
-![png](notebook_files/notebook_24_1.png)
+![png](notebook_files/notebook_24_2.png)
 
 
 Credit history seems to have the highest impact on deciding whether the loan should be approved or not. Clients with low credit score seem more likely to be denied.
@@ -703,10 +707,16 @@ tree_clf = get_gscv(dtree_clf, dtree_values)
 ```
 
     Fitting 3 folds for each of 432 candidates, totalling 1296 fits
+    
+
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 140 tasks      | elapsed:    2.4s
-    Best parameters: {'criterion': 'gini', 'max_depth': 2, 'max_features': 4, 'max_leaf_nodes': 10}, with F1 score of 0.78
-    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    6.9s finished
+    [Parallel(n_jobs=-2)]: Done 185 tasks      | elapsed:    1.3s
+    
+
+    Best parameters: {'criterion': 'entropy', 'max_depth': 2, 'max_features': 4, 'max_leaf_nodes': None}, with F1 score of 0.70
+    
+
+    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    2.7s finished
     
 
 
@@ -719,9 +729,9 @@ plt.show()
 
 ```
 
-    RMSE: 0.4685
-    Accuracy: 0.691 ± 0.193
-    F1 Score: 0.74
+    RMSE: 0.5485
+    Accuracy: 0.715 ± 0.132
+    F1 Score: 0.58
     
 
 
@@ -758,10 +768,16 @@ knn_clf = get_gscv(knn_clf, knn_values)
 ```
 
     Fitting 3 folds for each of 560 candidates, totalling 1680 fits
+    
+
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 410 tasks      | elapsed:    3.3s
-    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 14, 'p': 1, 'weights': 'uniform'}, with F1 score of 0.79
-    [Parallel(n_jobs=-2)]: Done 1680 out of 1680 | elapsed:   13.1s finished
+    [Parallel(n_jobs=-2)]: Done 410 tasks      | elapsed:    1.2s
+    
+
+    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 10, 'p': 2, 'weights': 'uniform'}, with F1 score of 0.79
+    
+
+    [Parallel(n_jobs=-2)]: Done 1680 out of 1680 | elapsed:    4.6s finished
     
 
 
@@ -774,7 +790,7 @@ plt.show()
 ```
 
     RMSE: 0.4598
-    Accuracy: 0.723 ± 0.235
+    Accuracy: 0.787 ± 0.262
     F1 Score: 0.76
     
 
@@ -812,11 +828,16 @@ svm_clf = get_gscv(svc_clf, svc_values)
 ```
 
     Fitting 3 folds for each of 640 candidates, totalling 1920 fits
+    
+
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 146 tasks      | elapsed:    1.7s
-    [Parallel(n_jobs=-2)]: Done 1330 tasks      | elapsed:   16.4s
-    Best parameters: {'C': 0.8, 'coef0': 0.0, 'degree': 2, 'gamma': 'scale', 'kernel': 'rbf'}, with F1 score of 0.80
-    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:   24.3s finished
+    [Parallel(n_jobs=-2)]: Done 634 tasks      | elapsed:    1.6s
+    
+
+    Best parameters: {'C': 0.8, 'coef0': 0.0, 'degree': 2, 'gamma': 'auto', 'kernel': 'poly'}, with F1 score of 0.81
+    
+
+    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:    4.7s finished
     
 
 
@@ -828,9 +849,9 @@ confusion(svm_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.4508
-    Accuracy: 0.797 ± 0.294
-    F1 Score: 0.77
+    RMSE: 0.4324
+    Accuracy: 0.804 ± 0.214
+    F1 Score: 0.79
     
 
 
@@ -1038,14 +1059,27 @@ print(classification_report(true_y_labels, predicted_y, target_names=target_name
 ![png](notebook_files/notebook_56_1.png)
 
 
-    RMSE: 0.4685
-    Accuracy: 0.797 ± 0.348
-    F1 Score: 0.76
+    RMSE: 0.4771
+    Accuracy: 0.795 ± 0.284
+    F1 Score: 0.75
     
 
 
 ![png](notebook_files/notebook_56_3.png)
 
+
+    
+    Classification Report
+                  precision    recall  f1-score   support
+    
+               Y       0.70      0.43      0.53        37
+               N       0.79      0.92      0.85        86
+    
+        accuracy                           0.77       123
+       macro avg       0.74      0.68      0.69       123
+    weighted avg       0.76      0.77      0.75       123
+    
+    
 
 ## 7. Evaluation
 From evaluation metrics it seems, that _deep neural network_ wins the first prize. Its accuracy peaked at around 90%.
