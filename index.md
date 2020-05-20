@@ -397,7 +397,11 @@ Here we have some essential statistics about our dataset. For instance, we can s
 
 
 ```python
-sns.heatmap(X.corr(), annot=True, vmin=-0.3, cmap="viridis", fmt=".2f")
+corr_X = X[:]
+for col in {"Property_Area", "Dependents", "Gender", "Married", "Education", "Self_Employed"}:
+    corr_X[col] = corr_X[col].cat.codes
+
+sns.heatmap(corr_X.corr(), annot=True, vmin=-0.3, cmap="viridis", fmt=".1f")
 plt.show()
 ```
 
@@ -419,7 +423,7 @@ sns.catplot("Loan_Status", col="Education", data=dataset, kind="count")
 
 
 
-    <seaborn.axisgrid.FacetGrid at 0x286ddf56f40>
+    <seaborn.axisgrid.FacetGrid at 0x7fc01d075978>
 
 
 
@@ -445,28 +449,12 @@ sns.catplot("Loan_Status", col="Education", data=dataset, kind="count")
 
 
 ```python
-sns.countplot(X["Gender"])
-plt.show()
-sns.countplot(X["Married"])
-plt.show()
-sns.countplot(X["Dependents"])
-plt.show()
-sns.countplot(X["Education"])
-plt.show()
-sns.countplot(X["Self_Employed"])
-plt.show()
-sns.countplot(X["Property_Area"])
-plt.show()
-sns.distplot(X["ApplicantIncome"], kde=True)
-plt.show()
-sns.distplot(X["CoapplicantIncome"], kde=True)
-plt.show()
-sns.distplot(X["Credit_History"], kde=True)
-plt.show()
-sns.distplot(X["LoanAmount"], kde=True)
-plt.show()
-sns.distplot(X["Loan_Amount_Term"], kde=True)
-plt.show()
+for col in {"Property_Area", "Dependents", "Gender", "Married", "Education", "Self_Employed"}:
+    sns.countplot(X[col])
+    plt.show()
+
+for col in {"ApplicantIncome", "CoapplicantIncome", "Credit_History", "LoanAmount", "Loan_Amount_Term"}:
+    sns.distplot(X[col])
 ```
 
 
@@ -497,22 +485,6 @@ plt.show()
 ![png](index_files/index_21_6.png)
 
 
-
-![png](index_files/index_21_7.png)
-
-
-
-![png](index_files/index_21_8.png)
-
-
-
-![png](index_files/index_21_9.png)
-
-
-
-![png](index_files/index_21_10.png)
-
-
 Most of the features are scattered along the x-axis. The only exception is Loan Amount, which roughly follows the Chi-squared distribution.
 
 
@@ -523,7 +495,7 @@ sns.countplot(y)
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x286de169160>
+    <matplotlib.axes._subplots.AxesSubplot at 0x7fc01cc9c630>
 
 
 
@@ -536,19 +508,15 @@ sns.countplot(y)
 sns.pairplot(dataset, hue="Loan_Status", kind="reg", diag_kws={"alpha": 0.5}, plot_kws={"scatter_kws": {"alpha": 0.35}})
 ```
 
-    C:\Users\vojdo\Anaconda3\envs\ml\lib\site-packages\numpy\linalg\linalg.py:1965: RuntimeWarning: invalid value encountered in greater
-      large = s > cutoff
-    
+
+
+
+    <seaborn.axisgrid.PairGrid at 0x7fbf6a0a8cc0>
 
 
 
 
-    <seaborn.axisgrid.PairGrid at 0x286ddc757f0>
-
-
-
-
-![png](index_files/index_24_2.png)
+![png](index_files/index_24_1.png)
 
 
 Credit history seems to have the highest impact on deciding whether the loan should be approved or not. Clients with low credit score seem more likely to be denied.
@@ -709,9 +677,9 @@ confusion(dummy_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.6439
-    Accuracy: 0.612 ± 0.219
-    F1 Score: 0.59
+    RMSE: 0.6182
+    Accuracy: 0.577 ± 0.179
+    F1 Score: 0.61
     
 
 
@@ -746,16 +714,10 @@ tree_clf = get_gscv(dtree_clf, dtree_values)
 ```
 
     Fitting 3 folds for each of 432 candidates, totalling 1296 fits
-    
-
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 185 tasks      | elapsed:    1.4s
-    
-
-    Best parameters: {'criterion': 'entropy', 'max_depth': 16, 'max_features': 'auto', 'max_leaf_nodes': 8}, with F1 score of 0.74
-    
-
-    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    2.9s finished
+    [Parallel(n_jobs=-2)]: Done 140 tasks      | elapsed:    2.7s
+    Best parameters: {'criterion': 'entropy', 'max_depth': 2, 'max_features': 8, 'max_leaf_nodes': 20}, with F1 score of 0.73
+    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    6.9s finished
     
 
 
@@ -768,9 +730,9 @@ plt.show()
 
 ```
 
-    RMSE: 0.5101
-    Accuracy: 0.708 ± 0.192
-    F1 Score: 0.68
+    RMSE: 0.5180
+    Accuracy: 0.749 ± 0.245
+    F1 Score: 0.66
     
 
 
@@ -807,16 +769,11 @@ knn_clf = get_gscv(knn_clf, knn_values)
 ```
 
     Fitting 3 folds for each of 560 candidates, totalling 1680 fits
-    
-
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 410 tasks      | elapsed:    1.3s
-    
-
-    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 14, 'p': 2, 'weights': 'uniform'}, with F1 score of 0.78
-    
-
-    [Parallel(n_jobs=-2)]: Done 1680 out of 1680 | elapsed:    4.9s finished
+    [Parallel(n_jobs=-2)]: Done 250 tasks      | elapsed:    2.1s
+    [Parallel(n_jobs=-2)]: Done 1450 tasks      | elapsed:   11.5s
+    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 12, 'p': 2, 'weights': 'uniform'}, with F1 score of 0.83
+    [Parallel(n_jobs=-2)]: Done 1680 out of 1680 | elapsed:   12.8s finished
     
 
 
@@ -828,9 +785,9 @@ confusion(knn_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.4685
-    Accuracy: 0.781 ± 0.147
-    F1 Score: 0.75
+    RMSE: 0.4132
+    Accuracy: 0.803 ± 0.189
+    F1 Score: 0.81
     
 
 
@@ -867,16 +824,11 @@ svm_clf = get_gscv(svc_clf, svc_values)
 ```
 
     Fitting 3 folds for each of 640 candidates, totalling 1920 fits
-    
-
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 634 tasks      | elapsed:    1.6s
-    
-
-    Best parameters: {'C': 0.8, 'coef0': 0.0, 'degree': 2, 'gamma': 'auto', 'kernel': 'poly'}, with F1 score of 0.78
-    
-
-    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:    4.8s finished
+    [Parallel(n_jobs=-2)]: Done 250 tasks      | elapsed:    1.8s
+    [Parallel(n_jobs=-2)]: Done 1450 tasks      | elapsed:   11.0s
+    Best parameters: {'C': 0.8, 'coef0': 0.0, 'degree': 2, 'gamma': 'scale', 'kernel': 'linear'}, with F1 score of 0.82
+    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:   14.6s finished
     
 
 
@@ -888,9 +840,9 @@ confusion(svm_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.4685
-    Accuracy: 0.773 ± 0.157
-    F1 Score: 0.75
+    RMSE: 0.4229
+    Accuracy: 0.819 ± 0.198
+    F1 Score: 0.80
     
 
 
@@ -1109,27 +1061,14 @@ print(classification_report(true_y_labels, predicted_y, target_names=target_name
 ![png](index_files/index_60_1.png)
 
 
-    RMSE: 0.4856
-    Accuracy: 0.773 ± 0.261
-    F1 Score: 0.75
+    RMSE: 0.4508
+    Accuracy: 0.812 ± 0.214
+    F1 Score: 0.78
     
 
 
 ![png](index_files/index_60_3.png)
 
-
-    
-    Classification Report
-                  precision    recall  f1-score   support
-    
-               Y       0.65      0.42      0.51        36
-               N       0.79      0.91      0.84        87
-    
-        accuracy                           0.76       123
-       macro avg       0.72      0.66      0.68       123
-    weighted avg       0.75      0.76      0.75       123
-    
-    
 
 ## 8. Evaluation
 It is easy to see, that we have moved far beyond the perfomance of the baseline model. Therefore, we could assume our project reached its goal. 
