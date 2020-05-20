@@ -8,15 +8,15 @@
 
 In this project we will implement several models to predict credibility of a loan applicant. We will use the Loan Prediction Problem Dataset from Kaggle. The structure of the project is as follows:
 
-1. [Exploratory Analysis](#1-exploratory-analysis)
-2. [Preprocessing of the dataset](#2-data-preprocessing)
-3. [Naive classifier](#3-naive-baseline-model)
-4. [Decision tree classifier](#4-decision-tree-classifier)
-5. [KNN classifier](#5-knn-classifier)
-6. [Support Vector Machine](#6-support-vector-machine)
-7. [Deep Neural Network](#7-deep-neural-network)
-8. [Evaluation](#8-evaluation)
-9. [Conclusion](#9-conclusion)
+1. [Exploratory Analysis](#1.-Exploratory-Analysis)
+2. [Preprocessing of the dataset](#2.-Data-preprocessing)
+3. [Naive classifier](#3.-Naive-baseline-model)
+4. [Decision tree classifier](#4.-Decision-tree-classifier)
+5. [KNN classifier](#5.-KNN-classifier)
+6. [Support Vector Machine](#6.-Support-Vector-Machine)
+7. [Deep Neural Network](#7.-Deep-Neural-Network)
+8. [Evaluation](#8.-Evaluation)
+9. [Conclusion](#9.-Conclusion)
 
 
 ## 1. Exploratory Analysis
@@ -402,7 +402,7 @@ plt.show()
 ```
 
 
-![png](notebook_files/notebook_18_0.png)
+![png](index_files/index_18_0.png)
 
 
 We also computed and plotted correlation matrix of features in the dataset. There is only one pair of features, loan amount and applicant income, which can be considered to be mildly positively correlated. Other features, have nearly no correlation among them. This results is quite suprising, as one would expect higher correlation of features.
@@ -419,28 +419,28 @@ sns.catplot("Loan_Status", col="Education", data=dataset, kind="count")
 
 
 
-    <seaborn.axisgrid.FacetGrid at 0x1ae6fca8ee0>
+    <seaborn.axisgrid.FacetGrid at 0x286ddf56f40>
 
 
 
 
-![png](notebook_files/notebook_20_1.png)
+![png](index_files/index_20_1.png)
 
 
 
-![png](notebook_files/notebook_20_2.png)
+![png](index_files/index_20_2.png)
 
 
 
-![png](notebook_files/notebook_20_3.png)
+![png](index_files/index_20_3.png)
 
 
 
-![png](notebook_files/notebook_20_4.png)
+![png](index_files/index_20_4.png)
 
 
 
-![png](notebook_files/notebook_20_5.png)
+![png](index_files/index_20_5.png)
 
 
 
@@ -470,47 +470,47 @@ plt.show()
 ```
 
 
-![png](notebook_files/notebook_21_0.png)
+![png](index_files/index_21_0.png)
 
 
 
-![png](notebook_files/notebook_21_1.png)
+![png](index_files/index_21_1.png)
 
 
 
-![png](notebook_files/notebook_21_2.png)
+![png](index_files/index_21_2.png)
 
 
 
-![png](notebook_files/notebook_21_3.png)
+![png](index_files/index_21_3.png)
 
 
 
-![png](notebook_files/notebook_21_4.png)
+![png](index_files/index_21_4.png)
 
 
 
-![png](notebook_files/notebook_21_5.png)
+![png](index_files/index_21_5.png)
 
 
 
-![png](notebook_files/notebook_21_6.png)
+![png](index_files/index_21_6.png)
 
 
 
-![png](notebook_files/notebook_21_7.png)
+![png](index_files/index_21_7.png)
 
 
 
-![png](notebook_files/notebook_21_8.png)
+![png](index_files/index_21_8.png)
 
 
 
-![png](notebook_files/notebook_21_9.png)
+![png](index_files/index_21_9.png)
 
 
 
-![png](notebook_files/notebook_21_10.png)
+![png](index_files/index_21_10.png)
 
 
 Most of the features are scattered along the x-axis. The only exception is Loan Amount, which roughly follows the Chi-squared distribution.
@@ -523,12 +523,12 @@ sns.countplot(y)
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x1ae6feb86a0>
+    <matplotlib.axes._subplots.AxesSubplot at 0x286de169160>
 
 
 
 
-![png](notebook_files/notebook_23_1.png)
+![png](index_files/index_23_1.png)
 
 
 
@@ -543,12 +543,12 @@ sns.pairplot(dataset, hue="Loan_Status", kind="reg", diag_kws={"alpha": 0.5}, pl
 
 
 
-    <seaborn.axisgrid.PairGrid at 0x1ae6f9d7a90>
+    <seaborn.axisgrid.PairGrid at 0x286ddc757f0>
 
 
 
 
-![png](notebook_files/notebook_24_2.png)
+![png](index_files/index_24_2.png)
 
 
 Credit history seems to have the highest impact on deciding whether the loan should be approved or not. Clients with low credit score seem more likely to be denied.
@@ -709,21 +709,21 @@ confusion(dummy_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.6502
-    Accuracy: 0.538 ± 0.158
-    F1 Score: 0.58
+    RMSE: 0.6439
+    Accuracy: 0.612 ± 0.219
+    F1 Score: 0.59
     
 
 
-![png](notebook_files/notebook_41_1.png)
+![png](index_files/index_41_1.png)
 
 
 
-![png](notebook_files/notebook_41_2.png)
+![png](index_files/index_41_2.png)
 
 
 
-![png](notebook_files/notebook_41_3.png)
+![png](index_files/index_41_3.png)
 
 
 ## 4. Decision tree classifier
@@ -752,10 +752,10 @@ tree_clf = get_gscv(dtree_clf, dtree_values)
     [Parallel(n_jobs=-2)]: Done 185 tasks      | elapsed:    1.4s
     
 
-    Best parameters: {'criterion': 'gini', 'max_depth': 1, 'max_features': 8, 'max_leaf_nodes': 6}, with F1 score of 0.80
+    Best parameters: {'criterion': 'entropy', 'max_depth': 16, 'max_features': 'auto', 'max_leaf_nodes': 8}, with F1 score of 0.74
     
 
-    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    2.8s finished
+    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    2.9s finished
     
 
 
@@ -768,21 +768,21 @@ plt.show()
 
 ```
 
-    RMSE: 0.4508
-    Accuracy: 0.716 ± 0.147
-    F1 Score: 0.77
+    RMSE: 0.5101
+    Accuracy: 0.708 ± 0.192
+    F1 Score: 0.68
     
 
 
-![png](notebook_files/notebook_44_1.png)
+![png](index_files/index_44_1.png)
 
 
 
-![png](notebook_files/notebook_44_2.png)
+![png](index_files/index_44_2.png)
 
 
 
-![png](notebook_files/notebook_44_3.png)
+![png](index_files/index_44_3.png)
 
 
 ## 5. KNN classifier
@@ -813,7 +813,7 @@ knn_clf = get_gscv(knn_clf, knn_values)
     [Parallel(n_jobs=-2)]: Done 410 tasks      | elapsed:    1.3s
     
 
-    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 12, 'p': 2, 'weights': 'uniform'}, with F1 score of 0.80
+    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 14, 'p': 2, 'weights': 'uniform'}, with F1 score of 0.78
     
 
     [Parallel(n_jobs=-2)]: Done 1680 out of 1680 | elapsed:    4.9s finished
@@ -828,21 +828,21 @@ confusion(knn_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.4508
-    Accuracy: 0.797 ± 0.234
-    F1 Score: 0.78
+    RMSE: 0.4685
+    Accuracy: 0.781 ± 0.147
+    F1 Score: 0.75
     
 
 
-![png](notebook_files/notebook_48_1.png)
+![png](index_files/index_48_1.png)
 
 
 
-![png](notebook_files/notebook_48_2.png)
+![png](index_files/index_48_2.png)
 
 
 
-![png](notebook_files/notebook_48_3.png)
+![png](index_files/index_48_3.png)
 
 
 ## 6. Support Vector Machine
@@ -873,10 +873,10 @@ svm_clf = get_gscv(svc_clf, svc_values)
     [Parallel(n_jobs=-2)]: Done 634 tasks      | elapsed:    1.6s
     
 
-    Best parameters: {'C': 0.8, 'coef0': 0.0, 'degree': 2, 'gamma': 'auto', 'kernel': 'poly'}, with F1 score of 0.80
+    Best parameters: {'C': 0.8, 'coef0': 0.0, 'degree': 2, 'gamma': 'auto', 'kernel': 'poly'}, with F1 score of 0.78
     
 
-    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:    4.9s finished
+    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:    4.8s finished
     
 
 
@@ -888,21 +888,21 @@ confusion(svm_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.4508
-    Accuracy: 0.796 ± 0.213
-    F1 Score: 0.77
+    RMSE: 0.4685
+    Accuracy: 0.773 ± 0.157
+    F1 Score: 0.75
     
 
 
-![png](notebook_files/notebook_52_1.png)
+![png](index_files/index_52_1.png)
 
 
 
-![png](notebook_files/notebook_52_2.png)
+![png](index_files/index_52_2.png)
 
 
 
-![png](notebook_files/notebook_52_3.png)
+![png](index_files/index_52_3.png)
 
 
 ## 7. Deep Neural Network
@@ -1102,32 +1102,32 @@ print(classification_report(true_y_labels, predicted_y, target_names=target_name
 ```
 
 
-![png](notebook_files/notebook_60_0.png)
+![png](index_files/index_60_0.png)
 
 
 
-![png](notebook_files/notebook_60_1.png)
+![png](index_files/index_60_1.png)
 
 
-    RMSE: 0.4508
-    Accuracy: 0.765 ± 0.199
-    F1 Score: 0.78
+    RMSE: 0.4856
+    Accuracy: 0.773 ± 0.261
+    F1 Score: 0.75
     
 
 
-![png](notebook_files/notebook_60_3.png)
+![png](index_files/index_60_3.png)
 
 
     
     Classification Report
                   precision    recall  f1-score   support
     
-               Y       0.82      0.46      0.59        39
-               N       0.79      0.95      0.86        84
+               Y       0.65      0.42      0.51        36
+               N       0.79      0.91      0.84        87
     
-        accuracy                           0.80       123
-       macro avg       0.81      0.71      0.73       123
-    weighted avg       0.80      0.80      0.78       123
+        accuracy                           0.76       123
+       macro avg       0.72      0.66      0.68       123
+    weighted avg       0.75      0.76      0.75       123
     
     
 
