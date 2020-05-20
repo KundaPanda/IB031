@@ -10,12 +10,13 @@ In this project we will implement several models to predict credibility of a loa
 
 1. [Exploratory Analysis](#1-exploratory-analysis)
 2. [Preprocessing of the dataset](#2-data-preprocessing)
-3. [Decision tree classifier](#3-decision-tree-classifier)
-4. [KNN classifier](#4-knn-classifier)
-5. [Support Vector Machine](#5-support-vector-machine)
-6. [Deep Neural Network](#6-deep-neural-network)
-7. [Evaluation](#7-evaluation)
-8. [Conclusion](#8-conclusion)
+3. [Naive classifier](#3-naive-baseline-model)
+4. [Decision tree classifier](#4-decision-tree-classifier)
+5. [KNN classifier](#5-knn-classifier)
+6. [Support Vector Machine](#6-support-vector-machine)
+7. [Deep Neural Network](#7-deep-neural-network)
+8. [Evaluation](#8-evaluation)
+9. [Conclusion](#9-conclusion)
 
 
 ## 1. Exploratory Analysis
@@ -418,7 +419,7 @@ sns.catplot("Loan_Status", col="Education", data=dataset, kind="count")
 
 
 
-    <seaborn.axisgrid.FacetGrid at 0x1f1a02befa0>
+    <seaborn.axisgrid.FacetGrid at 0x1ae6fca8ee0>
 
 
 
@@ -522,7 +523,7 @@ sns.countplot(y)
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x1f1a06e87f0>
+    <matplotlib.axes._subplots.AxesSubplot at 0x1ae6feb86a0>
 
 
 
@@ -542,7 +543,7 @@ sns.pairplot(dataset, hue="Loan_Status", kind="reg", diag_kws={"alpha": 0.5}, pl
 
 
 
-    <seaborn.axisgrid.PairGrid at 0x1f19ffbefd0>
+    <seaborn.axisgrid.PairGrid at 0x1ae6f9d7a90>
 
 
 
@@ -687,7 +688,45 @@ we will use for grid searching. All models will be trained on the same training 
 - **Precision Recall curve** - shows the tradeoff between precision and recall for different threshold
 - **Confusion matrix** -  shows the number of True Positive (TP), False Negative (FN), True Negative (TN), False Positive (FP) classifications.
 
-## 3. Decision tree classifier
+## 3. Naive baseline model
+
+This is a simple classifier, which chooses the class based on training set class distribution.
+
+It is very basic and is affected by the chosen train/test split a lot.
+
+
+```python
+from sklearn.dummy import DummyClassifier
+
+dummy_clf = DummyClassifier(strategy="stratified")
+
+dummy_clf.fit(train_X, train_y)
+
+evaluate(dummy_clf, test_X, test_y)
+roc(dummy_clf, test_X, test_y)
+prc(dummy_clf, test_X, test_y)
+confusion(dummy_clf, test_X, test_y)
+plt.show()
+```
+
+    RMSE: 0.6502
+    Accuracy: 0.538 ± 0.158
+    F1 Score: 0.58
+    
+
+
+![png](notebook_files/notebook_41_1.png)
+
+
+
+![png](notebook_files/notebook_41_2.png)
+
+
+
+![png](notebook_files/notebook_41_3.png)
+
+
+## 4. Decision tree classifier
 Decision trees are among the most used classification models. They iteratively split the dataset, until a tree conforming to given parameters has been constructed. 
 In leaves they contain class labels. Internal nodes represent kind of a boolean test, usually a value of a sample's feature, according to which the algorithm chooses the respective edge on the way to leaves.
 The tests can also use entropy and information gain to choose the best edge. There are many to ways to construct a tree, therefore extensive hyperparameter tunning is suitable.
@@ -710,13 +749,13 @@ tree_clf = get_gscv(dtree_clf, dtree_values)
     
 
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 185 tasks      | elapsed:    1.3s
+    [Parallel(n_jobs=-2)]: Done 185 tasks      | elapsed:    1.4s
     
 
-    Best parameters: {'criterion': 'entropy', 'max_depth': 5, 'max_features': 'sqrt', 'max_leaf_nodes': 6}, with F1 score of 0.75
+    Best parameters: {'criterion': 'gini', 'max_depth': 1, 'max_features': 8, 'max_leaf_nodes': 6}, with F1 score of 0.80
     
 
-    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    2.7s finished
+    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    2.8s finished
     
 
 
@@ -729,24 +768,24 @@ plt.show()
 
 ```
 
-    RMSE: 0.5020
-    Accuracy: 0.667 ± 0.243
-    F1 Score: 0.71
+    RMSE: 0.4508
+    Accuracy: 0.716 ± 0.147
+    F1 Score: 0.77
     
 
 
-![png](notebook_files/notebook_41_1.png)
+![png](notebook_files/notebook_44_1.png)
 
 
 
-![png](notebook_files/notebook_41_2.png)
+![png](notebook_files/notebook_44_2.png)
 
 
 
-![png](notebook_files/notebook_41_3.png)
+![png](notebook_files/notebook_44_3.png)
 
 
-## 4. KNN classifier
+## 5. KNN classifier
 
 Another popular classification algorithm, an example of instace-based learning or lazy learning. This time, all distances from a data point to other points are computed, and k-closest neighbours are chosen. Then, the class memberships
 of the _k-closest_ members are considered, with the original data point taking a class label from the most occuring one among its _k-closest_ neighbours. For the distance metrics,
@@ -774,10 +813,10 @@ knn_clf = get_gscv(knn_clf, knn_values)
     [Parallel(n_jobs=-2)]: Done 410 tasks      | elapsed:    1.3s
     
 
-    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 14, 'p': 2, 'weights': 'uniform'}, with F1 score of 0.78
+    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 12, 'p': 2, 'weights': 'uniform'}, with F1 score of 0.80
     
 
-    [Parallel(n_jobs=-2)]: Done 1680 out of 1680 | elapsed:    5.0s finished
+    [Parallel(n_jobs=-2)]: Done 1680 out of 1680 | elapsed:    4.9s finished
     
 
 
@@ -789,24 +828,24 @@ confusion(knn_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.4685
-    Accuracy: 0.797 ± 0.104
-    F1 Score: 0.75
+    RMSE: 0.4508
+    Accuracy: 0.797 ± 0.234
+    F1 Score: 0.78
     
 
 
-![png](notebook_files/notebook_45_1.png)
+![png](notebook_files/notebook_48_1.png)
 
 
 
-![png](notebook_files/notebook_45_2.png)
+![png](notebook_files/notebook_48_2.png)
 
 
 
-![png](notebook_files/notebook_45_3.png)
+![png](notebook_files/notebook_48_3.png)
 
 
-## 5. Support Vector Machine
+## 6. Support Vector Machine
 
 Support Vector Machines, abbr. SVM, is a supervised-learning algorithm used mainly for binary classification, although it is possible to use for multi-class classification
 by combing several SVMs. It creates hyperplanes in a multi-dimensional feature space, which are then used for generalization and classifications of data points. The best
@@ -834,10 +873,10 @@ svm_clf = get_gscv(svc_clf, svc_values)
     [Parallel(n_jobs=-2)]: Done 634 tasks      | elapsed:    1.6s
     
 
-    Best parameters: {'C': 2.0, 'coef0': 1.0, 'degree': 2, 'gamma': 'auto', 'kernel': 'sigmoid'}, with F1 score of 0.76
+    Best parameters: {'C': 0.8, 'coef0': 0.0, 'degree': 2, 'gamma': 'auto', 'kernel': 'poly'}, with F1 score of 0.80
     
 
-    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:    4.8s finished
+    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:    4.9s finished
     
 
 
@@ -849,24 +888,24 @@ confusion(svm_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.4856
-    Accuracy: 0.781 ± 0.141
-    F1 Score: 0.74
+    RMSE: 0.4508
+    Accuracy: 0.796 ± 0.213
+    F1 Score: 0.77
     
 
 
-![png](notebook_files/notebook_49_1.png)
+![png](notebook_files/notebook_52_1.png)
 
 
 
-![png](notebook_files/notebook_49_2.png)
+![png](notebook_files/notebook_52_2.png)
 
 
 
-![png](notebook_files/notebook_49_3.png)
+![png](notebook_files/notebook_52_3.png)
 
 
-## 6. Deep Neural Network
+## 7. Deep Neural Network
 Deep neural networks (DNNs) are artifical neural (ANNs) networks with several hidden layers. Each layer is a fixed number of artificial
 neurons, which accept an input, process it, and send it to the next layer. The layers are organized followingly: 
 
@@ -983,8 +1022,11 @@ Fitting 3 folds for each of 2880 candidates, totalling 8640 fits
 ohe = OneHotEncoder()
 
 nn_train_y = ohe.fit_transform(y_train.to_numpy().reshape(-1, 1))
-nn_test_y = ohe.transform(y_test.to_numpy().reshape(-1, 1))
-
+nn_test_y = ohe.transform(y_test.to_numpy().reshape(-1, 1))
+```
+
+
+```python
 # best_args = {'batch_size': 32, 'dropout': 0.1, 'epochs': 15, 'layers': (32, 32, 8), 'lr': 0.0004, 'optim': RMSprop}
 # best_args = {'batch_size': 32, 'dropout': 0.1, 'epochs': 12, 'layers': (64, 64, 64, 64, 32, 16), 'lr': 0.0003, 'optim': Adam}
 # best_args = {'batch_size': 32, 'dropout': 0.0, 'epochs': 15, 'layers': (32, 32, 16, 8), 'lr': 0.0003, 'optim': Adam}
@@ -1031,16 +1073,24 @@ dnn_clf.model.summary()
 
 
 ```python
-predicted_y = dnn_clf.predict(test_X)
-
-history_df = pd.DataFrame(data=data.history, columns=data.history.keys())
-
-sns.lineplot(legend='full', y='loss', x=range(len(data.history['loss'])), data=history_df)
-plt.show()
-sns.lineplot(legend='full', y='accuracy', x=range(len(data.history['accuracy'])), data=history_df)
-plt.show()
+from sklearn.metrics import roc_curve
 
 true_y_labels = np.argmax(nn_test_y, axis=1) 
+
+predicted_y = dnn_clf.predict(test_X)
+
+roc_curve(true_y_labels, predicted_y)
+fpr, tpr, thresholds = roc_curve(true_y_labels, predicted_y)
+
+roc_data = pd.DataFrame({"False Positive Rate": fpr, "True Positive Rate": tpr})
+
+sns.lineplot(x="False Positive Rate", y="True Positive Rate", data=roc_data)
+plt.show()
+
+history_df = pd.DataFrame(data=data.history, columns=data.history.keys())
+sns.lineplot(legend='full', y=history_df['loss'], x=range(len(data.history['loss'])), label='loss')
+sns.lineplot(legend='full', y=history_df['accuracy'], x=range(len(data.history['accuracy'])), label='accuracy')
+plt.show()
 
 evaluate(dnn_clf, test_X, test_y)
 sns.heatmap(confusion_matrix(true_y_labels, predicted_y), annot=True)
@@ -1052,51 +1102,50 @@ print(classification_report(true_y_labels, predicted_y, target_names=target_name
 ```
 
 
-![png](notebook_files/notebook_56_0.png)
+![png](notebook_files/notebook_60_0.png)
 
 
 
-![png](notebook_files/notebook_56_1.png)
+![png](notebook_files/notebook_60_1.png)
 
 
-    RMSE: 0.5334
-    Accuracy: 0.732 ± 0.266
-    F1 Score: 0.70
+    RMSE: 0.4508
+    Accuracy: 0.765 ± 0.199
+    F1 Score: 0.78
     
 
 
-![png](notebook_files/notebook_56_3.png)
+![png](notebook_files/notebook_60_3.png)
 
 
     
     Classification Report
                   precision    recall  f1-score   support
     
-               Y       0.63      0.40      0.49        42
-               N       0.74      0.88      0.80        81
+               Y       0.82      0.46      0.59        39
+               N       0.79      0.95      0.86        84
     
-        accuracy                           0.72       123
-       macro avg       0.68      0.64      0.65       123
-    weighted avg       0.70      0.72      0.70       123
+        accuracy                           0.80       123
+       macro avg       0.81      0.71      0.73       123
+    weighted avg       0.80      0.80      0.78       123
     
     
 
-## 7. Evaluation
-From evaluation metrics it seems, that _deep neural network_ wins the first prize. Its accuracy peaked at around 90%.
-On the other side of the spectrum is _decision tree classifier_, which had the worst evaluation metrics from all models,
-although _SVM_ was not far ahead. Surprisingly, _KNN_ had the second best performance, although it can be considered as the
-most simple from all the used models. 
+## 8. Evaluation
+It is easy to see, that we have moved far beyond the perfomance of the baseline model. Therefore, we could assume our project reached its goal. 
+
+From the evaluation metrics it seems, that _deep neural network_,  _KNN_, and _SVM_ performed nearly equally. Their accuracy exceeded 80%. This is quite surprising as  _KNN_ can be considered as the most simple from all 4 models and yet it kept pace with them. On the other side of the spectrum is 
+_decision tree classifier_, which had the worst evaluation metrics from all 4 models.
 
 And finally, the winner's podium:
 
-1. Deep Neural Network
-2. KNN Classifier
-3. Support Vector Machine
-4. Decision Tree Classifier
+1. Deep Neural Network, KNN Classifier, Support Vector Machine
+2. Decision Tree Classifier
+3. Dummy classifier
 
 Though keep in mind that with such small dataset the performance of all models may be influenced by the random state quite a bit.
 
-The performance of all models could be improved by using weighted samples as the dataset is quite imbalanced.
+The performance of all models could be improved in certain models (such as the DNN classifier) by using weighted samples as the dataset is quite imbalanced.
 
 The accuracy has quite a large differences between positive and negative samples. 
 This is most likely caused by the fact that sampling for model training is not stratified whereas accuracy is computed using stratified cross validation.
@@ -1104,7 +1153,7 @@ This is most likely caused by the fact that sampling for model training is not s
 All models seemed to have problems with recognising true negatives. In all cases the number of false negatives was greater than the number of true negatives.
 Though this could be due to imbalanced dataset as well.
 
-## 8. Conclusion
+## 9. Conclusion
 We have explored and preprocessed the dataset. From the computational side, training of the models and tuning of their hyperparameters did
 not take too long, in average about 35sec per model, with neural network being an exception, as it was trained with several epochs for each
 parameter search. Even though the dataset did not offer many records, we can conclude that the models performed overall quite well. 
