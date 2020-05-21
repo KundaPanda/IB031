@@ -107,33 +107,6 @@ y.shape
 
 The dataset had been split into training and testing subsets in around 1.67:1 ratio.
 
-We can look at the amount of distinct values of selected features.
-
-
-```python
-# value count of just some selected columns
-
-print(X.Gender.value_counts()) # oh yeah boi
-print(X.Married.value_counts())
-print(X.Education.value_counts())
-print(X.Property_Area.value_counts())
-```
-
-    Male      489
-    Female    112
-    Name: Gender, dtype: int64
-    Yes    398
-    No     213
-    Name: Married, dtype: int64
-    Graduate        480
-    Not Graduate    134
-    Name: Education, dtype: int64
-    Semiurban    233
-    Urban        202
-    Rural        179
-    Name: Property_Area, dtype: int64
-    
-
 
 ```python
 X.head()
@@ -406,7 +379,7 @@ plt.show()
 ```
 
 
-![png](index_files/index_18_0.png)
+![png](index_files/index_16_0.png)
 
 
 We also computed and plotted correlation matrix of features in the dataset. There is only one pair of features, loan amount and applicant income, which can be considered to be mildly positively correlated. Other features, have nearly no correlation among them. This results is quite suprising, as one would expect higher correlation of features.
@@ -423,8 +396,45 @@ sns.catplot("Loan_Status", col="Education", data=dataset, kind="count")
 
 
 
-    <seaborn.axisgrid.FacetGrid at 0x7fc01d075978>
+    <seaborn.axisgrid.FacetGrid at 0x7f6595abf9b0>
 
+
+
+
+![png](index_files/index_18_1.png)
+
+
+
+![png](index_files/index_18_2.png)
+
+
+
+![png](index_files/index_18_3.png)
+
+
+
+![png](index_files/index_18_4.png)
+
+
+
+![png](index_files/index_18_5.png)
+
+
+We can look at the amount of distinct values of selected features.
+
+
+```python
+for col in {"Property_Area", "Dependents", "Gender", "Married", "Education", "Self_Employed"}:
+    sns.countplot(X[col])
+    plt.show()
+
+for col in {"ApplicantIncome", "CoapplicantIncome", "Credit_History", "LoanAmount", "Loan_Amount_Term"}:
+    sns.distplot(X[col])
+    plt.show()
+```
+
+
+![png](index_files/index_20_0.png)
 
 
 
@@ -448,41 +458,23 @@ sns.catplot("Loan_Status", col="Education", data=dataset, kind="count")
 
 
 
-```python
-for col in {"Property_Area", "Dependents", "Gender", "Married", "Education", "Self_Employed"}:
-    sns.countplot(X[col])
-    plt.show()
-
-for col in {"ApplicantIncome", "CoapplicantIncome", "Credit_History", "LoanAmount", "Loan_Amount_Term"}:
-    sns.distplot(X[col])
-```
-
-
-![png](index_files/index_21_0.png)
+![png](index_files/index_20_6.png)
 
 
 
-![png](index_files/index_21_1.png)
+![png](index_files/index_20_7.png)
 
 
 
-![png](index_files/index_21_2.png)
+![png](index_files/index_20_8.png)
 
 
 
-![png](index_files/index_21_3.png)
+![png](index_files/index_20_9.png)
 
 
 
-![png](index_files/index_21_4.png)
-
-
-
-![png](index_files/index_21_5.png)
-
-
-
-![png](index_files/index_21_6.png)
+![png](index_files/index_20_10.png)
 
 
 Most of the features are scattered along the x-axis. The only exception is Loan Amount, which roughly follows the Chi-squared distribution.
@@ -495,12 +487,12 @@ sns.countplot(y)
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7fc01cc9c630>
+    <matplotlib.axes._subplots.AxesSubplot at 0x7f6594e9aa58>
 
 
 
 
-![png](index_files/index_23_1.png)
+![png](index_files/index_22_1.png)
 
 
 
@@ -511,12 +503,12 @@ sns.pairplot(dataset, hue="Loan_Status", kind="reg", diag_kws={"alpha": 0.5}, pl
 
 
 
-    <seaborn.axisgrid.PairGrid at 0x7fbf6a0a8cc0>
+    <seaborn.axisgrid.PairGrid at 0x7f6594e72ef0>
 
 
 
 
-![png](index_files/index_24_1.png)
+![png](index_files/index_23_1.png)
 
 
 Credit history seems to have the highest impact on deciding whether the loan should be approved or not. Clients with low credit score seem more likely to be denied.
@@ -677,21 +669,21 @@ confusion(dummy_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.6182
-    Accuracy: 0.577 ± 0.179
-    F1 Score: 0.61
+    RMSE: 0.6564
+    Accuracy: 0.610 ± 0.176
+    F1 Score: 0.57
     
 
 
-![png](index_files/index_41_1.png)
+![png](index_files/index_40_1.png)
 
 
 
-![png](index_files/index_41_2.png)
+![png](index_files/index_40_2.png)
 
 
 
-![png](index_files/index_41_3.png)
+![png](index_files/index_40_3.png)
 
 
 ## 4. Decision tree classifier
@@ -715,9 +707,9 @@ tree_clf = get_gscv(dtree_clf, dtree_values)
 
     Fitting 3 folds for each of 432 candidates, totalling 1296 fits
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 140 tasks      | elapsed:    2.7s
-    Best parameters: {'criterion': 'entropy', 'max_depth': 2, 'max_features': 8, 'max_leaf_nodes': 20}, with F1 score of 0.73
-    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    6.9s finished
+    [Parallel(n_jobs=-2)]: Done 140 tasks      | elapsed:    2.4s
+    Best parameters: {'criterion': 'gini', 'max_depth': 1, 'max_features': 8, 'max_leaf_nodes': 8}, with F1 score of 0.67
+    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    6.8s finished
     
 
 
@@ -730,21 +722,21 @@ plt.show()
 
 ```
 
-    RMSE: 0.5180
-    Accuracy: 0.749 ± 0.245
-    F1 Score: 0.66
+    RMSE: 0.5703
+    Accuracy: 0.681 ± 0.194
+    F1 Score: 0.54
     
 
 
-![png](index_files/index_44_1.png)
+![png](index_files/index_43_1.png)
 
 
 
-![png](index_files/index_44_2.png)
+![png](index_files/index_43_2.png)
 
 
 
-![png](index_files/index_44_3.png)
+![png](index_files/index_43_3.png)
 
 
 ## 5. KNN classifier
@@ -770,10 +762,10 @@ knn_clf = get_gscv(knn_clf, knn_values)
 
     Fitting 3 folds for each of 560 candidates, totalling 1680 fits
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 250 tasks      | elapsed:    2.1s
-    [Parallel(n_jobs=-2)]: Done 1450 tasks      | elapsed:   11.5s
-    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 12, 'p': 2, 'weights': 'uniform'}, with F1 score of 0.83
-    [Parallel(n_jobs=-2)]: Done 1680 out of 1680 | elapsed:   12.8s finished
+    [Parallel(n_jobs=-2)]: Done 250 tasks      | elapsed:    2.6s
+    [Parallel(n_jobs=-2)]: Done 1450 tasks      | elapsed:   13.9s
+    Best parameters: {'algorithm': 'auto', 'leaf_size': 10, 'n_neighbors': 14, 'p': 2, 'weights': 'uniform'}, with F1 score of 0.82
+    [Parallel(n_jobs=-2)]: Done 1680 out of 1680 | elapsed:   15.9s finished
     
 
 
@@ -785,21 +777,21 @@ confusion(knn_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.4132
-    Accuracy: 0.803 ± 0.189
-    F1 Score: 0.81
+    RMSE: 0.4229
+    Accuracy: 0.804 ± 0.196
+    F1 Score: 0.80
     
 
 
-![png](index_files/index_48_1.png)
+![png](index_files/index_47_1.png)
 
 
 
-![png](index_files/index_48_2.png)
+![png](index_files/index_47_2.png)
 
 
 
-![png](index_files/index_48_3.png)
+![png](index_files/index_47_3.png)
 
 
 ## 6. Support Vector Machine
@@ -825,10 +817,10 @@ svm_clf = get_gscv(svc_clf, svc_values)
 
     Fitting 3 folds for each of 640 candidates, totalling 1920 fits
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 250 tasks      | elapsed:    1.8s
-    [Parallel(n_jobs=-2)]: Done 1450 tasks      | elapsed:   11.0s
-    Best parameters: {'C': 0.8, 'coef0': 0.0, 'degree': 2, 'gamma': 'scale', 'kernel': 'linear'}, with F1 score of 0.82
-    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:   14.6s finished
+    [Parallel(n_jobs=-2)]: Done 250 tasks      | elapsed:    2.2s
+    [Parallel(n_jobs=-2)]: Done 1450 tasks      | elapsed:   12.9s
+    Best parameters: {'C': 0.8, 'coef0': 0.0, 'degree': 3, 'gamma': 'scale', 'kernel': 'poly'}, with F1 score of 0.80
+    [Parallel(n_jobs=-2)]: Done 1920 out of 1920 | elapsed:   17.5s finished
     
 
 
@@ -840,21 +832,21 @@ confusion(svm_clf, test_X, test_y)
 plt.show()
 ```
 
-    RMSE: 0.4229
-    Accuracy: 0.819 ± 0.198
-    F1 Score: 0.80
+    RMSE: 0.4508
+    Accuracy: 0.796 ± 0.224
+    F1 Score: 0.78
     
 
 
-![png](index_files/index_52_1.png)
+![png](index_files/index_51_1.png)
 
 
 
-![png](index_files/index_52_2.png)
+![png](index_files/index_51_2.png)
 
 
 
-![png](index_files/index_52_3.png)
+![png](index_files/index_51_3.png)
 
 
 ## 7. Deep Neural Network
@@ -1054,20 +1046,20 @@ print(classification_report(true_y_labels, predicted_y, target_names=target_name
 ```
 
 
-![png](index_files/index_60_0.png)
+![png](index_files/index_59_0.png)
 
 
 
-![png](index_files/index_60_1.png)
+![png](index_files/index_59_1.png)
 
 
-    RMSE: 0.4508
-    Accuracy: 0.812 ± 0.214
-    F1 Score: 0.78
+    RMSE: 0.4324
+    Accuracy: 0.788 ± 0.228
+    F1 Score: 0.80
     
 
 
-![png](index_files/index_60_3.png)
+![png](index_files/index_59_3.png)
 
 
 ## 8. Evaluation
@@ -1084,7 +1076,7 @@ And finally, the winner's podium:
 
 Though keep in mind that with such small dataset the performance of all models may be influenced by the random state quite a bit.
 
-The performance of all models could be improved in certain models (such as the DNN classifier) by using weighted samples as the dataset is quite imbalanced.
+The performance of certain models could be improved (such as the DNN classifier) by using weighted samples as the dataset is quite imbalanced.
 
 The accuracy has quite a large differences between positive and negative samples. 
 This is most likely caused by the fact that sampling for model training is not stratified whereas accuracy is computed using stratified cross validation.
