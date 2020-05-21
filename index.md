@@ -694,22 +694,34 @@ Decision trees can also be pruned, etheir during construction of after it.
 
 
 ```python
+len(train_X.columns)
+```
+
+
+
+
+    20
+
+
+
+
+```python
 from sklearn.tree import DecisionTreeClassifier
 
 dtree_clf = DecisionTreeClassifier()
 dtree_values = {"criterion": ["gini", "entropy"],
                 "max_depth": [1, 2, 5, 10, 16, None],
                 "max_leaf_nodes": [6, 8, 10, 12, 20, None],
-                "max_features": ["auto", "sqrt", "log2", 2, 4, 8]}
+                "max_features": ["auto", "sqrt", "log2", 2, 4, 8, 11, 15, len(train_X.columns)]}
                 
 tree_clf = get_gscv(dtree_clf, dtree_values)
 ```
 
-    Fitting 3 folds for each of 432 candidates, totalling 1296 fits
+    Fitting 3 folds for each of 648 candidates, totalling 1944 fits
     [Parallel(n_jobs=-2)]: Using backend LokyBackend with 3 concurrent workers.
-    [Parallel(n_jobs=-2)]: Done 140 tasks      | elapsed:    2.4s
-    Best parameters: {'criterion': 'gini', 'max_depth': 1, 'max_features': 8, 'max_leaf_nodes': 8}, with F1 score of 0.67
-    [Parallel(n_jobs=-2)]: Done 1296 out of 1296 | elapsed:    6.8s finished
+    [Parallel(n_jobs=-2)]: Done 634 tasks      | elapsed:    2.3s
+    Best parameters: {'criterion': 'entropy', 'max_depth': 10, 'max_features': 15, 'max_leaf_nodes': 8}, with F1 score of 0.71
+    [Parallel(n_jobs=-2)]: Done 1944 out of 1944 | elapsed:    6.9s finished
     
 
 
@@ -722,21 +734,21 @@ plt.show()
 
 ```
 
-    RMSE: 0.5703
-    Accuracy: 0.681 ± 0.194
-    F1 Score: 0.54
+    RMSE: 0.5410
+    Accuracy: 0.758 ± 0.231
+    F1 Score: 0.63
     
 
 
-![png](index_files/index_43_1.png)
+![png](index_files/index_44_1.png)
 
 
 
-![png](index_files/index_43_2.png)
+![png](index_files/index_44_2.png)
 
 
 
-![png](index_files/index_43_3.png)
+![png](index_files/index_44_3.png)
 
 
 ## 5. KNN classifier
@@ -783,15 +795,15 @@ plt.show()
     
 
 
-![png](index_files/index_47_1.png)
+![png](index_files/index_48_1.png)
 
 
 
-![png](index_files/index_47_2.png)
+![png](index_files/index_48_2.png)
 
 
 
-![png](index_files/index_47_3.png)
+![png](index_files/index_48_3.png)
 
 
 ## 6. Support Vector Machine
@@ -838,15 +850,15 @@ plt.show()
     
 
 
-![png](index_files/index_51_1.png)
+![png](index_files/index_52_1.png)
 
 
 
-![png](index_files/index_51_2.png)
+![png](index_files/index_52_2.png)
 
 
 
-![png](index_files/index_51_3.png)
+![png](index_files/index_52_3.png)
 
 
 ## 7. Deep Neural Network
@@ -1046,11 +1058,11 @@ print(classification_report(true_y_labels, predicted_y, target_names=target_name
 ```
 
 
-![png](index_files/index_59_0.png)
+![png](index_files/index_60_0.png)
 
 
 
-![png](index_files/index_59_1.png)
+![png](index_files/index_60_1.png)
 
 
     RMSE: 0.4324
@@ -1059,7 +1071,7 @@ print(classification_report(true_y_labels, predicted_y, target_names=target_name
     
 
 
-![png](index_files/index_59_3.png)
+![png](index_files/index_60_3.png)
 
 
 ## 8. Evaluation
